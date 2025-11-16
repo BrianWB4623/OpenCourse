@@ -17,3 +17,12 @@ nav a {
   color: red;
   padding: 0 1rem;
 }
+/*for the footer*/
+footer {
+  background-color: blueviolet;
+  color: white;
+  text-align: center;
+  padding: 1rem;
+  margin-top: 2rem;
+  font-size: 2rem;
+}
