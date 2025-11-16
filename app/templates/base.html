@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>OpenCourse</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='styles.css') }}"
+    />
+  </head>
+  <body>
+    <nav>
+      <a href="{{url_for('main.index')}}">OpenCourse</a>
+      <a href="{{url_for('main.feature')}}">Course Details</a>
+      <a href="{{url_for('auth.login')}}">Login</a>
+    </nav>
+    {% block content %}{% endblock %}
+    <footer>
+      <p>OpenCourse — The Best Course LMS out there!</p>
+    </footer>
+  </body>
+</html>
