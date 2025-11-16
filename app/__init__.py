@@ -9,11 +9,7 @@ login_manager=LoginManager()
 basedir=os.path.abspath(os.path.dirname(__file__))
 def create_app():
     app=Flask(__name__,instance_relative_config=True)
-    app.config.from_mapping(
-        SECRET_KEY='you-will-never-guess',
-        SQLALCHEMY_DATABASE_URI='sqlite:///' + os.path.join(basedir, 'app.db'),
-        SQLALCHEMY_TRACK_MODIFICATIONS=False,
-    )
+    app.config.from_object("app.config")
     db.init_app(app)
     login_manager.init_app(app)
     login_manager.login_view="auth.login"
