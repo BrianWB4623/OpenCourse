@@ -1,0 +1,49 @@
+{% extends "base.html" %} {% block content %}
+<main style="padding: 1rem">
+  <h1>Register</h1>
+
+  {# base.html has no flash area, so show flashes here #} {% with messages =
+  get_flashed_messages(with_categories=true) %} {% if messages %}
+  <div style="margin: 0.75rem 0">
+    {% for cat, msg in messages %}
+    <div
+      style="
+        background: #ffffff22;
+        padding: 0.5rem 0.75rem;
+        border-radius: 0.5rem;
+        margin: 0.35rem 0;
+      "
+    >
+      {{ msg }}
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %} {% endwith %}
+
+  <form method="POST" novalidate>
+    {{ form.hidden_tag() }}
+
+    <div style="margin: 0.5rem 0">
+      {{ form.username.label }}<br />
+      {{ form.username(size=32) }} {% for err in form.username.errors %}
+      <div style="color: #ffd1d1">{{ err }}</div>
+      {% endfor %}
+    </div>
+
+    <div style="margin: 0.5rem 0">
+      {{ form.password.label }}<br />
+      {{ form.password(size=32) }} {% for err in form.password.errors %}
+      <div style="color: #ffd1d1">{{ err }}</div>
+      {% endfor %}
+    </div>
+    <div style="margin: 0.5rem 0">
+      {{ form.role.label }}<br />
+      {{ form.role() }} {% for err in form.role.errors %}
+      <div style="color: #ffd1d1">{{ err }}</div>
+      {% endfor %}
+    </div>
+
+    <div style="margin: 0.75rem 0">{{ form.submit() }}</div>
+  </form>
+</main>
+{% endblock %}
