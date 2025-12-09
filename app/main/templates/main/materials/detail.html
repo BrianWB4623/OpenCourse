@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block title %}{{ material.title }}{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1>{{ material.title }}</h1>
+            <small class="text-muted">
+                Created by <strong>{{ material.instructor.username }}</strong> on {{ material.created_at.strftime('%Y-%m-%d %H:%M') }}
+            </small>
+        </div>
+        <div class="col-md-4 text-end">
+            {% if current_user.is_authenticated and current_user.id == material.instructor_id %}
+                <form method="POST" action="{{ url_for('main.delete_material', id=material.id) }}" style="display: inline;">
+                    <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this material?');">Delete</button>
+                </form>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">Content</h5>
+            <p class="card-text">{{ material.description }}</p>
+        </div>
+    </div>
+
+    <div class="mt-4">
+        <a href="{{ url_for('main.list_materials') }}" class="btn btn-secondary">Back to Materials</a>
+    </div>
+</div>
+{% endblock %}

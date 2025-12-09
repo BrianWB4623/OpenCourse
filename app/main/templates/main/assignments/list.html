@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block title %}Assignments{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1>Assignments</h1>
+        </div>
+        <div class="col-md-4 text-end">
+            {% if current_user.is_authenticated %}
+                <a href="{{ url_for('main.create_assignment') }}" class="btn btn-primary">+ Create Assignment</a>
+            {% endif %}
+        </div>
+    </div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{% if category == 'error' %}danger{% else %}success{% endif %} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    {% if assignments %}
+        <div class="list-group">
+            {% for assignment in assignments %}
+                <a href="{{ url_for('main.assignment_detail', id=assignment.id) }}" class="list-group-item list-group-item-action">
+                    <div class="d-flex w-100 justify-content-between">
+                        <h5 class="mb-1">{{ assignment.title }}</h5>
+                        <small>{{ assignment.created_at.strftime('%Y-%m-%d %H:%M') }}</small>
+                    </div>
+                    <p class="mb-1">{{ assignment.description[:100] }}{% if assignment.description|length > 100 %}...{% endif %}</p>
+                    <small class="text-muted">By: {{ assignment.instructor.username }}</small>
+                </a>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="alert alert-info" role="alert">
+            No assignments found. <a href="{{ url_for('main.create_assignment') }}">Create one</a>!
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
