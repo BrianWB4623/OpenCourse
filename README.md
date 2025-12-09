@@ -33,13 +33,11 @@ Milestone 1 — non-functional Flask-based LMS prototype.
 
 ### 1. Activate the virtual environment
 
-```bash
 venv\Scripts\activate
 
 ### 2.
 
 pytest
-
 
 ## Screenshots
 
@@ -57,4 +55,14 @@ pytest
 
 5.Login Page
 <img width="1919" height="863" alt="image" src="Login.png" />
-```
+
+## Team Roles
+
+Person 1 (Rachel) – Backend Models, Database, Create/Delete Routes
+Build SQLAlchemy models, Configure and initialize the database, implement main entity CRUD routes.
+
+Person 2 (Brian) – Authentication, WTForms, Edit/Update Routes
+Create authentication and main entity forms, Implement Flask-Login authentication, Implement edit/update routes for assignments and materials
+
+Person 3 (Sohum) – Unit Testing, Documentation (PDF), README, Tagging
+Create tests/ folder structure, Write unite, regression, and implementation tests, create documentation, complete the full README, tag github, final verification for the app to be functional
