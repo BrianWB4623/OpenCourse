@@ -23,8 +23,8 @@
     {{ form.hidden_tag() }}
     <!--For the name input-->
     <div style="margin: 0.5rem 0">
-      {{ form.name.label }}<br />
-      {{ form.name(size=40) }} {% for err in form.name.errors %}
+      {{ form.title.label }}<br />
+      {{ form.title(size=40) }} {% for err in form.title.errors %}
       <div style="color: #ffd1d1">{{ err }}</div>
       {% endfor %}
     </div>
