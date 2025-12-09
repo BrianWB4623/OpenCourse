@@ -29,6 +29,18 @@ Milestone 1 — non-functional Flask-based LMS prototype.
    python run.py
    ```
 
+## Testing Instructions
+
+### 1. Activate the virtual environment
+
+```bash
+venv\Scripts\activate
+
+### 2.
+
+pytest
+
+
 ## Screenshots
 
 1. Home Page
@@ -45,3 +57,4 @@ Milestone 1 — non-functional Flask-based LMS prototype.
 
 5.Login Page
 <img width="1919" height="863" alt="image" src="Login.png" />
+```
