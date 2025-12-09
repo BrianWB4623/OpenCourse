@@ -1,6 +1,6 @@
 # OpenCourse
 
-Milestone 1 — non-functional Flask-based LMS prototype.
+Milestone 2 — non-functional Flask-based LMS prototype.
 
 ## Installation
 
