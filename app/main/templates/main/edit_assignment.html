@@ -1,0 +1,43 @@
+{% extends "base.html" %} {% block content %}
+<main style="padding: 1rem">
+  <h1>Edit Assignment</h1>
+  <!--Display flash messages-->
+  {% with messages = get_flashed_messages(with_categories=true) %} {% if
+  messages %}
+  <div style="margin: 0.75rem 0">
+    {% for cat, msg in messages %}
+    <div
+      style="
+        background: #ffffff22;
+        padding: 0.5rem 0.75rem;
+        border-radius: 0.5rem;
+        margin: 0.35rem 0;
+      "
+    >
+      {{ msg }}
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %} {% endwith %}
+  <form method="POST" novalidate>
+    {{ form.hidden_tag() }}
+    <!--For the name input-->
+    <div style="margin: 0.5rem 0">
+      {{ form.title.label }}<br />
+      {{ form.title(size=40) }} {% for err in form.title.errors %}
+      <div style="color: #ffd1d1">{{ err }}</div>
+      {% endfor %}
+    </div>
+    <!--For the description input-->
+    <div style="margin: 0.5rem 0">
+      {{ form.description.label }}<br />
+      {{ form.description(rows=5, cols=60) }} {% for err in
+      form.description.errors %}
+      <div style="color: #ffd1d1">{{ err }}</div>
+      {% endfor %}
+    </div>
+    <!--For the submit button-->
+    <div style="margin: 0.75rem 0">{{ form.submit() }}</div>
+  </form>
+</main>
+{% endblock %}

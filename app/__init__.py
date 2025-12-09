@@ -14,6 +14,12 @@ def create_app():
     login_manager.init_app(app)
     login_manager.login_view="auth.login"
     from . import models
+    from app.models import User
+    #load users
+    @login_manager.user_loader
+    def load_user(user_id):
+        return User.query.get(int(user_id))
+    
     #blue prints of rpages
     from app.auth import auth_bp
     from app.main import main_bp
