@@ -52,6 +52,7 @@ def register():
         user = User(
             username=form.username.data,
             email=fake_email,
+            role=form.role.data,
             )
         user.set_password(form.password.data)
         # make the password

@@ -5,6 +5,11 @@ from app.models import Assignment, CourseMaterial
 from flask_login import login_required, current_user
 from app.forms import AssignmentForm, MaterialForm
 
+#Helper method to determine if instructor or not
+INSTRUCTOR_ROLES= ("teacher","ta")
+def is_instructor(user):
+    return user.is_authenticated and user.role in INSTRUCTOR_ROLES
+
 
 @main_bp.route("/")
 def index():
@@ -32,6 +37,10 @@ def assignment_detail(id):
 @login_required
 def create_assignment():
     """Create a new assignment"""
+    #check if instructor
+    if not is_instructor(current_user):
+        flash("You do not have permission to create assignments", "danger")#displayu error
+        return redirect(url_for("main.list_assignments"))
     if request.method == "POST":
         title = request.form.get("title")
         description = request.form.get("description")
@@ -56,6 +65,10 @@ def create_assignment():
 @login_required
 def delete_assignment(id):
     """Delete an assignment"""
+    #check if instructor
+    if not is_instructor(current_user):
+        flash("You do not have permission to delete assignments", "danger")#display error
+        return redirect(url_for("main.assignment_detail"))
     assignment = Assignment.query.get_or_404(id)
     
     # Check if user is the instructor who created this assignment
@@ -71,6 +84,10 @@ def delete_assignment(id):
 @main_bp.route("/assignments/<int:id>/edit", methods=["GET","POST"])
 @login_required
 def edit_assignment(id):
+    #check if instructor
+    if not is_instructor(current_user):
+        flash("You do not have permission to create assignments", "danger")#display error message
+        return redirect(url_for("main.assignment_detail"))
     assignment=Assignment.query.get_or_404(id)
     if assignment.instructor_id != current_user.id:
         flash("You dont have permission to edit this assignment")
@@ -104,6 +121,10 @@ def material_detail(id):
 @login_required
 def create_material():
     """Create a new course material"""
+    #check if instructor
+    if not is_instructor(current_user):
+        flash("You do not have permission to create materials", "danger")#display error message
+        return redirect(url_for("main.list_materials"))
     if request.method == "POST":
         title = request.form.get("title")
         description = request.form.get("description")
@@ -128,6 +149,10 @@ def create_material():
 @login_required
 def delete_material(id):
     """Delete a course material"""
+     #check if instructor
+    if not is_instructor(current_user):
+        flash("You do not have permission to delete materials", "danger")#display error message
+        return redirect(url_for("main.material_detail"))
     material = CourseMaterial.query.get_or_404(id)
     
     # Check if user is the instructor who created this material
@@ -144,6 +169,10 @@ def delete_material(id):
 @main_bp.route("/materials/<int:id>/edit",methods=["GET","POST"])
 @login_required
 def edit_material(id):
+    #check if instructor
+    if not is_instructor(current_user):
+        flash("You do not have permission to edit materials", "danger")#display error message
+        return redirect(url_for("main.material_detail"))
     material=CourseMaterial.query.get_or_404(id)
     if material.instructor_id != current_user.id:
         flash("You dont have permission to edit this material")
