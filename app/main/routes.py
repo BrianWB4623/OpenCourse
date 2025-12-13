@@ -22,12 +22,14 @@ def feature():
 # ========== ASSIGNMENTS ROUTES ==========
 
 @main_bp.route("/assignments")
+@login_required
 def list_assignments():
     """List all assignments"""
     assignments = Assignment.query.all()
     return render_template("main/assignments/list.html", assignments=assignments)
 
 @main_bp.route("/assignments/<int:id>")
+@login_required
 def assignment_detail(id):
     """View assignment details"""
     assignment = Assignment.query.get_or_404(id)
@@ -106,12 +108,14 @@ def edit_assignment(id):
 # ========== COURSE MATERIALS ROUTES ==========
 
 @main_bp.route("/materials")
+@login_required
 def list_materials():
     """List all course materials"""
     materials = CourseMaterial.query.all()
     return render_template("main/materials/list.html", materials=materials)
 
 @main_bp.route("/materials/<int:id>")
+@login_required
 def material_detail(id):
     """View material details"""
     material = CourseMaterial.query.get_or_404(id)
