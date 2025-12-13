@@ -5,24 +5,48 @@ body {
   padding: 0;
   background-color: purple;
   color: white;
+  /*footer at bottom*/
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+.main-content {
+  flex: 1;
+  padding: 2rem 0;
 }
 /*for nav bar, blueviolet background*/
 nav {
-  background-color: blueviolet;
+  background-color: blueviolet !important;
   padding: 1rem;
 }
 /*for the links red text*/
 
 nav a {
-  color: red;
-  padding: 0 1rem;
+  margin-right:4rem
+  color: purple !important;
+  padding: 0 0rem;
+  text-decoration: none;
+  font-weight: 500;
+}
+/*when hovering over it with moust*/
+
+nav a:hover {
+  color: pink !important;
 }
 /*for the footer*/
 footer {
   background-color: blueviolet;
   color: white;
   text-align: center;
-  padding: 1rem;
-  margin-top: 2rem;
+  padding: 20px 0;
+  margin-top: 0;
   font-size: 2rem;
+}
+.navbar .nav-link {
+  padding-left: 1.5rem !important;
+  padding-right: 1.5rem !important;
+}
+.navbar .container {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
 }
