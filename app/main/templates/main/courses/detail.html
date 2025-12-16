@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block title %}{{ course.course_name }}{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+  <h1>{{ course.course_name }}</h1>
+
+  <h3 class="mt-4">Assignments</h3>
+  {% if assignments %}
+    <ul class="list-group">
+      {% for a in assignments %}
+        <li class="list-group-item"><a href="{{ url_for('main.assignment_detail', id=a.id) }}">{{ a.title }}</a></li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <div class="alert alert-info">No assignments for this course.</div>
+  {% endif %}
+
+  <h3 class="mt-4">Materials</h3>
+  {% if materials %}
+    <ul class="list-group">
+      {% for m in materials %}
+        <li class="list-group-item"><a href="{{ url_for('main.material_detail', id=m.id) }}">{{ m.title }}</a></li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <div class="alert alert-info">No materials for this course.</div>
+  {% endif %}
+
+  <a href="{{ url_for('main.list_courses') }}" class="btn btn-secondary mt-3">Back</a>
+</div>
+{% endblock %}

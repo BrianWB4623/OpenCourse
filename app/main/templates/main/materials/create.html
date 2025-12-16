@@ -47,6 +47,15 @@
             placeholder="Enter material title"
           />
         </div>
+        <div class="mb-3">
+          <label for="course_id" class="form-label">Course (optional)</label>
+          <select id="course_id" name="course_id" class="form-select">
+            <option value="">-- None --</option>
+            {% for c in courses %}
+            <option value="{{ c.id }}">{{ c.course_name }}</option>
+            {% endfor %}
+          </select>
+        </div>
 
         <div class="mb-3">
           <label for="description" class="form-label"

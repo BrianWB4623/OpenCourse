@@ -62,9 +62,19 @@
   </div>
   {#Back to assignment list button#}
   <div class="mt-4">
-    <a href="{{ url_for('main.list_assignments') }}" class="btn btn-secondary"
-      >Back to Assignments</a
-    >
+    {% if current_user.is_authenticated and current_user.role == 'student' %}
+      {% if student_submission %}
+        <a class="btn btn-success" href="{{ url_for('main.submission_detail', id=student_submission.id) }}">View your Submission</a>
+      {% else %}
+        <a href="{{ url_for('main.submit_assignment', id=assignment.id) }}" class="btn btn-primary">Submit Assignment</a>
+      {% endif %}
+    {% endif %}
+
+    {% if current_user.is_authenticated and current_user.role in ('teacher','ta') and current_user.id == assignment.instructor_id %}
+    <a href="{{ url_for('main.list_submissions', id=assignment.id) }}" class="btn btn-outline-primary">View Submissions</a>
+    {% endif %}
+
+    <a href="{{ url_for('main.list_assignments') }}" class="btn btn-secondary">Back to Assignments</a>
   </div>
 </div>
 {% endblock %}

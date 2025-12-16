@@ -4,9 +4,12 @@ from app import db
 from app.models import Assignment, CourseMaterial
 from flask_login import login_required, current_user
 from app.forms import AssignmentForm, MaterialForm
+from app.forms import SubmissionForm, GradeForm
+from app.models import Submission, Grade, Course
+from flask import abort
 
 #Helper method to determine if instructor or not
-INSTRUCTOR_ROLES= ("teacher","ta")
+INSTRUCTOR_ROLES= ("teacher","ta","instructor")
 def is_instructor(user):
     return user.is_authenticated and user.role in INSTRUCTOR_ROLES
 #Allow other files to use
@@ -36,7 +39,10 @@ def list_assignments():
 def assignment_detail(id):
     """View assignment details"""
     assignment = Assignment.query.get_or_404(id)
-    return render_template("main/assignments/detail.html", assignment=assignment)
+    student_submission = None
+    if current_user.is_authenticated and current_user.role == 'student':
+        student_submission = Submission.query.filter_by(assignment_id=id, student_id=current_user.id).first()
+    return render_template("main/assignments/detail.html", assignment=assignment, student_submission=student_submission)
 
 @main_bp.route("/assignments/create", methods=["GET", "POST"])
 @login_required
@@ -46,9 +52,11 @@ def create_assignment():
     if not is_instructor(current_user):
         flash("You do not have permission to create assignments", "danger")#displayu error
         return redirect(url_for("main.list_assignments"))
+    courses = Course.query.all()
     if request.method == "POST":
         title = request.form.get("title")
         description = request.form.get("description")
+        course_id = request.form.get('course_id') or None
         
         if not title or not description:
             flash("Title and description are required.", "error")
@@ -58,13 +66,14 @@ def create_assignment():
             title=title,
             description=description,
             instructor_id=current_user.id
+            , course_id=course_id
         )
         db.session.add(assignment)
         db.session.commit()
         flash(f"Assignment '{title}' created successfully!", "success")
         return redirect(url_for("main.list_assignments"))
     
-    return render_template("main/assignments/create.html")
+    return render_template("main/assignments/create.html", courses=courses)
 
 @main_bp.route("/assignments/<int:id>/delete", methods=["POST"])
 @login_required
@@ -86,25 +95,164 @@ def delete_assignment(id):
     db.session.commit()
     flash(f"Assignment '{title}' deleted successfully!", "success")
     return redirect(url_for("main.list_assignments"))
-@main_bp.route("/assignments/<int:id>/edit", methods=["GET","POST"])
+
+
+@main_bp.route('/assignments/<int:id>/edit', methods=['GET', 'POST'])
 @login_required
 def edit_assignment(id):
-    #check if instructor
-    if not is_instructor(current_user):
-        flash("You do not have permission to create assignments", "danger")#display error message
-        return redirect(url_for("main.assignment_detail"))
-    assignment=Assignment.query.get_or_404(id)
-    if assignment.instructor_id != current_user.id:
-        flash("You dont have permission to edit this assignment")
-        return redirect(url_for("main.list_assignments"))
-    form = AssignmentForm(obj=assignment)
-    if form.validate_on_submit():
-        assignment.title=form.title.data
-        assignment.description=form.description.data
+    assignment = Assignment.query.get_or_404(id)
+    if current_user.role != 'instructor' or assignment.instructor_id != current_user.id:
+        abort(403)
+
+    if request.method == 'POST':
+        title = request.form.get('title')
+        description = request.form.get('description')
+        if not title or not description:
+            flash('Title and description are required.', 'error')
+            return redirect(url_for('main.edit_assignment', id=id))
+        assignment.title = title
+        assignment.description = description
         db.session.commit()
-        flash(f"Assignment '{assignment.title}' updated successfully!")
-        return redirect(url_for("main.assignment_detail", id=assignment.id))
-    return render_template("main/edit_assignment.html", form=form, assignment=assignment)
+        flash('Assignment updated.', 'success')
+        return redirect(url_for('main.assignment_detail', id=id))
+
+    return render_template('main/assignments/edit.html', assignment=assignment)
+
+
+
+@main_bp.route('/assignments/<int:id>/submit', methods=['GET', 'POST'])
+@login_required
+def submit_assignment(id):
+    assignment = Assignment.query.get_or_404(id)
+    # only students
+    if not current_user.is_authenticated or current_user.role != 'student':
+        abort(403)
+    form = SubmissionForm()
+    if form.validate_on_submit():
+        submission = Submission(assignment_id=assignment.id, student_id=current_user.id, content=form.content.data)
+        db.session.add(submission)
+        db.session.commit()
+        flash('Submission created.', 'success')
+        return redirect(url_for('main.assignment_detail', id=id))
+    return render_template('main/submissions/create.html', assignment=assignment, form=form)
+
+
+@main_bp.route('/assignments/<int:id>/submissions')
+@login_required
+def list_submissions(id):
+    assignment = Assignment.query.get_or_404(id)
+    # instructor can see all submissions for their assignment
+    if current_user.role == 'teacher' or current_user.role == 'ta':
+        if assignment.instructor_id != current_user.id:
+            abort(403)
+        subs = Submission.query.filter_by(assignment_id=assignment.id).all()
+    else:
+        # student can see only their submissions
+        subs = Submission.query.filter_by(assignment_id=assignment.id, student_id=current_user.id).all()
+    return render_template('main/submissions/list.html', assignment=assignment, submissions=subs)
+
+
+@main_bp.route('/submissions/<int:id>', methods=['GET', 'POST'])
+@login_required
+def submission_detail(id):
+    submission = Submission.query.get_or_404(id)
+    assignment = submission.assignment
+    # authorization
+    if not (current_user.id == submission.student_id or (current_user.is_authenticated and current_user.role in INSTRUCTOR_ROLES and assignment.instructor_id == current_user.id)):
+        abort(403)
+    form = GradeForm()
+    if form.validate_on_submit():
+        # only instructor can grade
+        if not (current_user.is_authenticated and current_user.role in INSTRUCTOR_ROLES and assignment.instructor_id == current_user.id):
+            abort(403)
+        # create or update grade
+        if submission.grade:
+            submission.grade.score = float(form.score.data)
+            submission.grade.feedback = form.feedback.data
+        else:
+            g = Grade(submission_id=submission.id, grader_id=current_user.id, score=float(form.score.data), feedback=form.feedback.data)
+            db.session.add(g)
+        db.session.commit()
+        flash('Grade saved.', 'success')
+        return redirect(url_for('main.submission_detail', id=id))
+
+    # prefill
+    if submission.grade and request.method == 'GET':
+        form.score.data = str(submission.grade.score)
+        form.feedback.data = submission.grade.feedback
+
+    return render_template('main/submissions/detail.html', submission=submission, form=form, grade=submission.grade)
+
+
+@main_bp.route('/submissions/<int:id>/delete', methods=['POST'])
+@login_required
+def delete_submission(id):
+    submission = Submission.query.get_or_404(id)
+    if not (current_user.id == submission.student_id or (current_user.is_authenticated and current_user.role in INSTRUCTOR_ROLES and submission.assignment.instructor_id == current_user.id)):
+        abort(403)
+    aid = submission.assignment_id
+    db.session.delete(submission)
+    db.session.commit()
+    flash('Submission deleted.', 'success')
+    return redirect(url_for('main.assignment_detail', id=aid))
+
+
+# ========== COURSES ==========
+
+
+@main_bp.route('/courses')
+@login_required
+def list_courses():
+    courses = Course.query.all()
+    return render_template('main/courses/list.html', courses=courses)
+
+
+@main_bp.route('/courses/create', methods=['GET', 'POST'])
+@login_required
+def create_course():
+    if not is_instructor(current_user):
+        abort(403)
+    if request.method == 'POST':
+        name = request.form.get('course_name')
+        if not name:
+            flash('Course name required', 'error')
+            return redirect(url_for('main.create_course'))
+        c = Course(course_name=name)
+        db.session.add(c)
+        db.session.commit()
+        flash('Course created', 'success')
+        return redirect(url_for('main.list_courses'))
+    return render_template('main/courses/create.html')
+
+
+@main_bp.route('/courses/<int:id>')
+@login_required
+def course_detail(id):
+    course = Course.query.get_or_404(id)
+    assignments = Assignment.query.filter_by(course_id=course.id).all()
+    materials = CourseMaterial.query.filter_by(course_id=course.id).all()
+    return render_template('main/courses/detail.html', course=course, assignments=assignments, materials=materials)
+
+
+@main_bp.route('/dashboard')
+@login_required
+def dashboard():
+    # instructor view
+    if current_user.role in INSTRUCTOR_ROLES:
+        assignments = Assignment.query.filter_by(instructor_id=current_user.id).all()
+        materials = CourseMaterial.query.filter_by(instructor_id=current_user.id).all()
+        # count ungraded submissions per assignment
+        ungraded = {a.id: Submission.query.filter_by(assignment_id=a.id).filter(Submission.grade == None).count() for a in assignments}
+        return render_template('main/dashboard_instructor.html', assignments=assignments, materials=materials, ungraded=ungraded)
+
+    # student view
+    else:
+        # assignments student hasn't submitted yet
+        subs = Submission.query.filter_by(student_id=current_user.id).all()
+        submitted_assignment_ids = [s.assignment_id for s in subs]
+        pending = Assignment.query.filter(~Assignment.id.in_(submitted_assignment_ids)).all()
+        materials = CourseMaterial.query.all()
+        return render_template('main/dashboard_student.html', assignments=pending, materials=materials)
 
 
 
@@ -132,9 +280,11 @@ def create_material():
     if not is_instructor(current_user):
         flash("You do not have permission to create materials", "danger")#display error message
         return redirect(url_for("main.list_materials"))
+    courses = Course.query.all()
     if request.method == "POST":
         title = request.form.get("title")
         description = request.form.get("description")
+        course_id = request.form.get('course_id') or None
         
         if not title or not description:
             flash("Title and description are required.", "error")
@@ -144,13 +294,14 @@ def create_material():
             title=title,
             description=description,
             instructor_id=current_user.id
+            , course_id=course_id
         )
         db.session.add(material)
         db.session.commit()
         flash(f"Material '{title}' created successfully!", "success")
         return redirect(url_for("main.list_materials"))
     
-    return render_template("main/materials/create.html")
+    return render_template("main/materials/create.html", courses=courses)
 
 @main_bp.route("/materials/<int:id>/delete", methods=["POST"])
 @login_required
@@ -173,28 +324,27 @@ def delete_material(id):
     flash(f"Material '{title}' deleted successfully!", "success")
     return redirect(url_for("main.list_materials"))
 
-@main_bp.route("/materials/<int:id>/edit",methods=["GET","POST"])
+
+@main_bp.route('/materials/<int:id>/edit', methods=['GET', 'POST'])
 @login_required
 def edit_material(id):
-    #check if instructor
-    if not is_instructor(current_user):
-        flash("You do not have permission to edit materials", "danger")#display error message
-        return redirect(url_for("main.material_detail"))
-    material=CourseMaterial.query.get_or_404(id)
-    if material.instructor_id != current_user.id:
-        flash("You dont have permission to edit this material")
-        return redirect(url_for("main.list_materials"))
-    form = MaterialForm(obj=material)
-    if form.validate_on_submit():
-        material.title=form.title.data
-        material.description=form.description.data
-        db.session.commit()
-        flash(f"Material '{material.title}' updated successfully!")
-        return redirect(url_for("main.material_detail", id=material.id))
-    return render_template("main/edit_material.html", form=form, material=material)
+    material = CourseMaterial.query.get_or_404(id)
+    if current_user.role != 'instructor' or material.instructor_id != current_user.id:
+        abort(403)
 
-#Dummy route for dashboard
-@main_bp.route("/dashboard")
-@login_required
-def dashboard():
-    return render_template("main/dashboard.html")
+    if request.method == 'POST':
+        title = request.form.get('title')
+        description = request.form.get('description')
+        if not title or not description:
+            flash('Title and description are required.', 'error')
+            return redirect(url_for('main.edit_material', id=id))
+        material.title = title
+        material.description = description
+        db.session.commit()
+        flash('Material updated.', 'success')
+        return redirect(url_for('main.material_detail', id=id))
+
+    return render_template('main/materials/edit.html', material=material)
+
+
+

@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block title %}Create Course{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+  <h1>Create Course</h1>
+  <form method="POST">
+    <div class="mb-3">
+      <label for="course_name">Course Name</label>
+      <input id="course_name" name="course_name" class="form-control" required />
+    </div>
+    <button class="btn btn-primary">Create</button>
+    <a class="btn btn-secondary" href="{{ url_for('main.list_courses') }}">Cancel</a>
+  </form>
+</div>
+{% endblock %}

@@ -47,9 +47,25 @@ def instructor_user(app):
         user = User(
             username="Professor Rojas",
             email="crojas@example.com",
-            password_hash="testpassword",  # app compares plain text
             role="instructor",
         )
+        # set hashed password for real authentication
+        user.set_password("testpassword")
+        db.session.add(user)
+        db.session.commit()
+        return user
+
+
+@pytest.fixture
+def student_user(app):
+    """Sample Student for database"""
+    with app.app_context():
+        user = User(
+            username="student1",
+            email="student1@example.com",
+            role="student",
+        )
+        user.set_password("testpassword")
         db.session.add(user)
         db.session.commit()
         return user

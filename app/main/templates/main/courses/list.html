@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block title %}Courses{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+  <h1>Courses</h1>
+  {% if current_user.is_authenticated and is_instructor(current_user) %}
+    <a class="btn btn-primary mb-3" href="{{ url_for('main.create_course') }}">Create Course</a>
+  {% endif %}
+  {% if courses %}
+    <ul class="list-group">
+      {% for c in courses %}
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+          <a href="{{ url_for('main.course_detail', id=c.id) }}">{{ c.course_name }}</a>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <div class="alert alert-info">No courses yet.</div>
+  {% endif %}
+</div>
+{% endblock %}

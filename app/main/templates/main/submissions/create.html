@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block title %}Submit Assignment{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+  <h1>Submit: {{ assignment.title }}</h1>
+
+  <form method="POST">
+    {{ form.hidden_tag() }}
+    <div class="mb-3">
+      {{ form.content.label }}
+      {{ form.content(class_='form-control') }}
+      {% for err in form.content.errors %}
+        <div class="text-danger">{{ err }}</div>
+      {% endfor %}
+    </div>
+
+    <button class="btn btn-primary">Submit</button>
+    <a href="{{ url_for('main.assignment_detail', id=assignment.id) }}" class="btn btn-secondary">Cancel</a>
+  </form>
+</div>
+{% endblock %}

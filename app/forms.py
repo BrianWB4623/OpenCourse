@@ -23,6 +23,17 @@ class MaterialForm(FlaskForm):
     submit = SubmitField("Upload Material")
 
 
+class SubmissionForm(FlaskForm):
+    content = TextAreaField('Submission', validators=[DataRequired()])
+    submit = SubmitField('Submit Assignment')
+
+
+class GradeForm(FlaskForm):
+    score = StringField('Score', validators=[DataRequired()])
+    feedback = TextAreaField('Feedback', validators=[Optional()])
+    submit = SubmitField('Save Grade')
+
+
 
 
 

@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block title %}Submission Detail{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+  <h1>Submission for {{ submission.assignment.title }}</h1>
+  <p><strong>Submitted by:</strong> {{ submission.student.username }} &middot; <small class="text-muted">{{ submission.created_at.strftime('%Y-%m-%d %H:%M') }}</small></p>
+
+  <div class="card mb-3">
+    <div class="card-body">
+      <h5 class="card-title">Content</h5>
+      <p class="card-text">{{ submission.content }}</p>
+    </div>
+  </div>
+
+  {% if submission.grade %}
+  <div class="card mb-3">
+    <div class="card-body">
+      <h5 class="card-title">Grade: {{ submission.grade.score }}</h5>
+      <p>{{ submission.grade.feedback }}</p>
+      <small class="text-muted">Graded on {{ submission.grade.created_at.strftime('%Y-%m-%d %H:%M') }}</small>
+    </div>
+  </div>
+  {% endif %}
+
+  {% if current_user.role in ('teacher','ta') and submission.assignment.instructor_id == current_user.id %}
+    <h3>Grade submission</h3>
+    <form method="POST">
+      {{ form.hidden_tag() }}
+      <div class="mb-3">
+        {{ form.score.label }}
+        {{ form.score(class_='form-control') }}
+      </div>
+      <div class="mb-3">
+        {{ form.feedback.label }}
+        {{ form.feedback(class_='form-control') }}
+      </div>
+      <button class="btn btn-primary">Save Grade</button>
+    </form>
+  {% endif %}
+
+  <a href="{{ url_for('main.assignment_detail', id=submission.assignment.id) }}" class="btn btn-secondary mt-3">Back</a>
+</div>
+{% endblock %}
