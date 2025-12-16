@@ -9,7 +9,10 @@ from app.forms import AssignmentForm, MaterialForm
 INSTRUCTOR_ROLES= ("teacher","ta")
 def is_instructor(user):
     return user.is_authenticated and user.role in INSTRUCTOR_ROLES
-
+#Allow other files to use
+@main_bp.app_context_processor
+def inject_role_helpers():
+    return dict(is_instructor=is_instructor)
 
 @main_bp.route("/")
 def index():

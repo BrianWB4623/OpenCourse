@@ -6,7 +6,7 @@ content %}
       <h1>Assignments</h1>
     </div>
     <div class="col-md-4 text-end">
-      {% if current_user.is_authenticated %}
+      {% if current_user.is_authenticated and is_instructor(current_user) %}
       <a href="{{ url_for('main.create_assignment') }}" class="btn btn-primary"
         >+ Create Assignment</a
       >
