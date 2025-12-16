@@ -12,7 +12,12 @@
     <nav>
       <a href="{{url_for('main.index')}}">OpenCourse</a>
       <a href="{{url_for('main.feature')}}">Course Details</a>
-      <a href="{{url_for('auth.login')}}">Login</a>
+      {% if current_user.is_authenticated %}
+        <a href="{{ url_for('main.dashboard') }}">Dashboard</a>
+        <a href="{{ url_for('auth.logout') }}">Logout ({{ current_user.username }})</a>
+      {% else %}
+        <a href="{{url_for('auth.login')}}">Login</a>
+      {% endif %}
     </nav>
     {% block content %}{% endblock %}
     <footer>

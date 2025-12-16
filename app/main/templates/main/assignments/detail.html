@@ -28,6 +28,14 @@
     </div>
 
     <div class="mt-4">
+        {% if current_user.is_authenticated and current_user.role == 'student' %}
+            <a href="{{ url_for('main.submit_assignment', id=assignment.id) }}" class="btn btn-primary">Submit Assignment</a>
+        {% endif %}
+
+        {% if current_user.is_authenticated and current_user.role == 'instructor' and current_user.id == assignment.instructor_id %}
+            <a href="{{ url_for('main.list_submissions', id=assignment.id) }}" class="btn btn-outline-primary">View Submissions</a>
+        {% endif %}
+
         <a href="{{ url_for('main.list_assignments') }}" class="btn btn-secondary">Back to Assignments</a>
     </div>
 </div>

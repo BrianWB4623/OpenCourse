@@ -24,6 +24,9 @@ class Assignment(db.Model):
     description = db.Column(db.Text, nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     instructor_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    course_id = db.Column(db.Integer, db.ForeignKey('course.id'), nullable=True)
+    # relationships
+    submissions = db.relationship('Submission', backref='assignment', lazy=True)
 
 class CourseMaterial(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -31,8 +34,33 @@ class CourseMaterial(db.Model):
     description = db.Column(db.Text, nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     instructor_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    course_id = db.Column(db.Integer, db.ForeignKey('course.id'), nullable=True)
+
 
 class Course(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     course_name = db.Column(db.String(120), nullable=False)
+    # relationships
+    assignments = db.relationship('Assignment', backref='course', lazy=True)
+    materials = db.relationship('CourseMaterial', backref='course', lazy=True)
+
+
+class Submission(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    assignment_id = db.Column(db.Integer, db.ForeignKey('assignment.id'), nullable=False)
+    student_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    content = db.Column(db.Text, nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    grade = db.relationship('Grade', backref='submission', uselist=False)
+    # link to student
+    student = db.relationship('User', backref='submissions', foreign_keys=[student_id])
+
+
+class Grade(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    submission_id = db.Column(db.Integer, db.ForeignKey('submission.id'), nullable=False)
+    grader_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    score = db.Column(db.Float, nullable=False)
+    feedback = db.Column(db.Text, nullable=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
 

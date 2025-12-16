@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block title %}Instructor Dashboard{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+  <h1>Instructor Dashboard</h1>
+
+  <h3 class="mt-4">Your Courses</h3>
+  {% if courses %}
+    <ul class="list-group">
+      {% for c in courses %}
+        <li class="list-group-item">{{ c.course_name }}</li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <div class="alert alert-info">You have not created or been assigned any courses yet.</div>
+  {% endif %}
+
+  <h3 class="mt-4">Your Assignments</h3>
+  {% if assignments %}
+    <ul class="list-group">
+      {% for a in assignments %}
+        <li class="list-group-item d-flex justify-content-between">
+          <div>
+            <a href="{{ url_for('main.assignment_detail', id=a.id) }}">{{ a.title }}</a>
+            {% if a.course %}<small class="text-muted"> &mdash; {{ a.course.course_name }}</small>{% endif %}
+          </div>
+          <div>
+            <a class="btn btn-sm btn-outline-primary" href="{{ url_for('main.list_submissions', id=a.id) }}">Submissions</a>
+          </div>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <div class="alert alert-info">No assignments found. <a href="{{ url_for('main.create_assignment') }}">Create one</a>.</div>
+  {% endif %}
+
+  <h3 class="mt-4">Your Materials</h3>
+  {% if materials %}
+    <ul class="list-group">
+      {% for m in materials %}
+        <li class="list-group-item"><a href="{{ url_for('main.material_detail', id=m.id) }}">{{ m.title }}</a></li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <div class="alert alert-info">No materials uploaded. <a href="{{ url_for('main.create_material') }}">Upload one</a>.</div>
+  {% endif %}
+</div>
+{% endblock %}
