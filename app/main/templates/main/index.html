@@ -1,11 +1,37 @@
-{% extends "base.html" %}
-{% block content %}
-  <main style="padding:1rem;">
-    <h1>Welcome to OpenCourse</h1>
-    <p>This is a minimal prototype.</p>
-    <section style="background:#ffffff22;padding:1rem;border-radius:.75rem;margin-top:1rem;">
-      <h2>Courses Listed Here</h2>
-      <p>Mathematics</p>
-    </section>
-  </main>
+{% extends "base.html" %} {% block content %}
+<main class="container py-5">
+  <h1 class="mb-4">Welcome to OpenCourse</h1>
+
+  {% if not current_user.is_authenticated %}
+  <p class="lead">
+    Please <a href="{{ url_for('auth.login') }}">log in</a> or
+    <a href="{{ url_for('auth.register') }}">register</a> to start using
+    OpenCourse.
+  </p>
+
+  <section class="card bg-transparent border-0 mt-4">
+    <div class="card-body home-card">
+      <h2 class="h5 mb-2">What is OpenCourse?</h2>
+      <p class="mb-0">
+        OpenCourse is a lightweight LMS where instructors can post assignments
+        and materials, and students can access course content.
+      </p>
+    </div>
+  </section>
+  {% else %}
+  <p class="lead">
+    Welcome {{ current_user.username }}! Visit your
+    <a href="{{ url_for('main.dashboard') }}">dashboard</a> to view your
+    courses.
+  </p>
+  <section class="card bg-transparent border-0 mt-4">
+    <div class="card-body home-card">
+      <h2 class="h6 mb-2">Quick Start</h2>
+      <p class="mb-0 text-muted">
+        You’re logged in. Go to dashboard to view classes.
+      </p>
+    </div>
+  </section>
+  {% endif %}
+</main>
 {% endblock %}

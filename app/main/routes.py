@@ -193,3 +193,8 @@ def edit_material(id):
         return redirect(url_for("main.material_detail", id=material.id))
     return render_template("main/edit_material.html", form=form, material=material)
 
+#Dummy route for dashboard
+@main_bp.route("/dashboard")
+@login_required
+def dashboard():
+    return render_template("main/dashboard.html")
