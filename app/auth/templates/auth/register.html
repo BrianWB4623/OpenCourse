@@ -2,12 +2,6 @@
 <main class="container py-5">
   <h1 class="mb-4">Register and OpenCourse Account</h1>
 
-  {#Flash messages #} {% with messages =
-  get_flashed_messages(with_categories=true) %} {% if messages %} {% for cat,
-  msg in messages %}
-  <div class="alert alert-info py-2 my-2" role="alert">{{ msg }}</div>
-  {% endfor %} {% endif %} {% endwith %}
-
   <form method="POST" novalidate>
     {{ form.hidden_tag() }}
     <!--Username-->

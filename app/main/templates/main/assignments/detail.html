@@ -1,7 +1,7 @@
 {% extends "base.html" %} {% block title %}{{ assignment.title }}{% endblock %}
 {% block content %}
 <div class="container mt-5">
-  <!--Breadcrumb-->
+  {#Nav breadcrumb#}
   <nav aria-label="breadcrumb">
     <ol class="breadcrumb mb-2">
       <li class="breadcrumb-item">
@@ -17,6 +17,7 @@
   </nav>
   <div class="row mb-4">
     <div class="col-md-8">
+      {#Assignment title#}
       <h1>{{ assignment.title }}</h1>
       <small class="text-muted">
         Created by <strong>{{ assignment.instructor.username }}</strong> on {{
@@ -25,6 +26,7 @@
     </div>
 
     <div class="col-md-4 text-end">
+      {#Edit and delete buttons for the instructor who created the assignment#}
       {% if current_user.is_authenticated and current_user.id ==
       assignment.instructor_id %}
       <a
@@ -51,14 +53,14 @@
       {% endif %}
     </div>
   </div>
-
+  {#Assignment Description#}
   <div class="card">
     <div class="card-body">
       <h5 class="card-title">Description</h5>
       <p class="card-text">{{ assignment.description }}</p>
     </div>
   </div>
-
+  {#Back to assignment list button#}
   <div class="mt-4">
     <a href="{{ url_for('main.list_assignments') }}" class="btn btn-secondary"
       >Back to Assignments</a

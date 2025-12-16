@@ -1,5 +1,6 @@
 {% extends "base.html" %} {% block content %}
 <main class="container py-5">
+  <!--Breadcrumb-->
   <nav aria-label="breadcrumb">
     <ol class="breadcrumb mb-2">
       <li class="breadcrumb-item">
@@ -14,11 +15,6 @@
     </ol>
   </nav>
   <h1 class="mb-4">Edit Assignment</h1>
-  <!--Display flash messages-->
-  {% with messages = get_flashed_messages(with_categories=true) %} {% if
-  messages %} {% for cat, msg in messages %}
-  <div class="alert alert-info py-2 my-2" role="alert">{{msg}}</div>
-  {% endfor %} {% endif %} {% endwith %}
   <form method="POST" novalidate>
     {{ form.hidden_tag() }}
     <!--For the name input-->

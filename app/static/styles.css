@@ -64,3 +64,7 @@ footer {
 .btn-primary:hover {
   background-color: #9a4de6 !important;
 }
+.home-card {
+  background: #ffffff22;
+  border-radius: 0.75rem;
+}

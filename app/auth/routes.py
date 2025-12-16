@@ -22,12 +22,12 @@ def login():
         if user and check_password_hash(user.password_hash, form.password.data):
             # login user
             login_user(user, remember=form.remember_me.data)
-            flash("Log in successfull")
+            flash("Log in successfull","success")
             # back to dashboard
             return redirect(url_for("main.index"))
         else:
             # user doesnt exist, or password wrong
-            flash("Invalid username or password")
+            flash("Invalid username or password","error")
     # show login page again
     return render_template("auth/login.html", form=form)
 
@@ -45,7 +45,7 @@ def register():
         existing_user = User.query.filter_by(username=form.username.data).first()
         if existing_user:
             # display error, new form
-            flash("Username taken, choose another")
+            flash("Username taken, choose another","error")
             return render_template("auth/register.html", form=form)
         # create the user
         fake_email = f"{form.username.data}@example.com"
@@ -61,7 +61,7 @@ def register():
         db.session.add(user)
         db.session.commit()
         # success message
-        flash("Youve succesfully created an account, you may now login")
+        flash("Youve succesfully created an account, you may now login","success")
         # bring to login page
         return redirect(url_for("auth.login"))
     # validation failed, show the form again

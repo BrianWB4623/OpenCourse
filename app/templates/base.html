@@ -71,6 +71,27 @@
         </div>
       </div>
     </nav>
+    <div class="container mt-3">
+      {% with messages = get_flashed_messages(with_categories=true) %} {% if
+      messages %} {% for category, message in messages %} {% set bootstrap_class
+      = { 'success': 'success', 'error': 'danger', 'danger': 'danger',
+      'warning': 'warning', 'info': 'info' }.get(category, 'secondary') %}
+
+      <div
+        class="alert alert-{{ bootstrap_class }} alert-dismissible fade show"
+        role="alert"
+      >
+        {{ message }}
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="alert"
+        ></button>
+      </div>
+
+      {% endfor %} {% endif %} {% endwith %}
+    </div>
+
     <div class="container main-content">{% block content %}{% endblock %}</div>
     <footer><p>OpenCourse — The Best Course LMS out there!</p></footer>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>

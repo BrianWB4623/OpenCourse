@@ -6,29 +6,15 @@ content %}
       <h1>Assignments</h1>
     </div>
     <div class="col-md-4 text-end">
-      {% if current_user.is_authenticated and is_instructor(current_user) %}
+      {#Create assignment button for instructors#} {% if
+      current_user.is_authenticated and is_instructor(current_user) %}
       <a href="{{ url_for('main.create_assignment') }}" class="btn btn-primary"
         >+ Create Assignment</a
       >
       {% endif %}
     </div>
   </div>
-
-  {% with messages = get_flashed_messages(with_categories=true) %} {% if
-  messages %} {% for category, message in messages %}
-  <div
-    class="alert alert-{% if category == 'error' %}danger{% else %}success{% endif %} alert-dismissible fade show"
-    role="alert"
-  >
-    {{ message }}
-    <button
-      type="button"
-      class="btn-close"
-      data-bs-dismiss="alert"
-      aria-label="Close"
-    ></button>
-  </div>
-  {% endfor %} {% endif %} {% endwith %} {% if assignments %}
+  {% if assignments %}
   <div class="list-group">
     {% for assignment in assignments %}
     <a
