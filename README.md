@@ -71,7 +71,8 @@ Create authentication and main entity forms, Implement Flask-Login authenticatio
 Person 3 (Sohum) – Unit Testing, Documentation (PDF), README, Tagging
 Create tests/ folder structure, Write unit, regression, and implementation tests, create documentation, complete the full README, tag github, final verification for the app to be functional
 
-Milestone 3 - Final Release
+##Milestone 3 - Final Release
+
 Home Page Logged In 
 <img width="2861" height="1619" alt="image" src="https://github.com/user-attachments/assets/b21322ff-9cfd-4a26-90a8-5b747a9fa4a2" />
 
