@@ -1,6 +1,6 @@
 # OpenCourse
 
-Milestone 1 — non-functional Flask-based LMS prototype.
+OpenCourse is a simple, easy-to-use LMS built using Flask. The goal of OpenCourse is to be a minimalistic, simple course management tool. Open source will only use simple course tabs such as assignments, grades, and course materials. It avoids extras that clutter the space and are never used. It will provide a simplistic, easy-to-use interface for teachers to manage courses with students.
 
 ## Installation
 
